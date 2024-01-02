@@ -32,7 +32,7 @@ OBJ
     cfg:        "boardcfg.flip"
     ser:        "com.serial.terminal.ansi" | SER_BAUD=115_200
     time:       "time"
-    pointer:    "input.pointer.grove-mini-trackball.spin" | SCL=28, SDA=29, I2C_FREQ=100_000
+    pointer:    "input.pointer.grove-mini-trackball" | SCL=28, SDA=29, I2C_FREQ=100_000
 
 
 PUB main() | i
