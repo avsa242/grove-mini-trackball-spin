@@ -1,33 +1,29 @@
 {
-    --------------------------------------------
-    Filename: input.pointer.grove-mini-trackball.spin
-    Author: Jesse Burt
-    Description: Driver for the Grove mini trackball
-    Copyright (c) 2024
-    Started Jan 1, 2024
-    Updated Jan 2, 2024
-    See end of file for terms of use.
-    --------------------------------------------
+----------------------------------------------------------------------------------------------------
+    Filename:       input.pointer.grove-mini-trackball.spin
+    Description:    Driver for the Grove mini trackball
+    Author:         Jesse Burt
+    Started:        Jan 1, 2024
+    Updated:        Sep 3, 2024
+    Copyright (c) 2024 - See end of file for terms of use.
+----------------------------------------------------------------------------------------------------
 }
 
 #include "input.pointer.common.spinh"           ' pull in code common to all pointing drivers
 
 CON
 
+    { default I/O settings; these can be overridden in the parent object }
+    SCL         = 28
+    SDA         = 29
+    I2C_FREQ    = 100_000
+    I2C_ADDR    = 0
+
+
     SLAVE_WR    = core.SLAVE_ADDR
     SLAVE_RD    = core.SLAVE_ADDR|1
-
-    DEF_SCL     = 28
-    DEF_SDA     = 29
-    DEF_HZ      = 100_000
-    DEF_ADDR    = 0
     I2C_MAX_FREQ= core.I2C_MAX_FREQ
 
-    { default I/O settings; these can be overridden in the parent object }
-    SCL         = DEF_SCL
-    SDA         = DEF_SDA
-    I2C_FREQ    = DEF_HZ
-    I2C_ADDR    = DEF_ADDR
 
 OBJ
 
@@ -44,13 +40,20 @@ OBJ
 PUB null()
 ' This is not a top-level object
 
+
 PUB start(): status
-' Start using "standard" Propeller I2C pins and 100kHz
+' Start using default I/O configuration
     return startx(SCL, SDA, I2C_FREQ)
 
 
 PUB startx(SCL_PIN, SDA_PIN, I2C_HZ): status
-' Start using custom IO pins and I2C bus frequency
+' Start the driver with custom I/O settings
+'   SCL_PIN:    I2C clock, 0..31
+'   SDA_PIN:    I2C data, 0..31
+'   I2C_HZ:     I2C clock speed (max official specification is 400_000 but is unenforced)
+'   Returns:
+'       cog ID+1 of I2C engine on success (= calling cog ID+1, if the bytecode I2C engine is used)
+'       0 on failure
     if ( lookdown(SCL_PIN: 0..31) and lookdown(SDA_PIN: 0..31) )
         if ( status := i2c.init(SCL_PIN, SDA_PIN, I2C_HZ) )
             time.usleep(core.T_POR)
@@ -61,6 +64,7 @@ PUB startx(SCL_PIN, SDA_PIN, I2C_HZ): status
     ' Re-check I/O pin assignments, bus speed, connections, power
     ' Lastly - make sure you have at least one free core/cog
     return FALSE
+
 
 PUB stop()
 ' Stop the driver
@@ -80,7 +84,7 @@ PUB pointer_rel_x(): x
     x := 0
     x -= rd_byte(core.LEFT)
     x += rd_byte(core.RIGHT)
-    x := ~x / _pointer_x_sens                  ' extend sign, scale to sensitivity
+    x := ~x / _pointer_x_sens                   ' extend sign, scale to sensitivity
 
     { update the pointer absolute position and clamp to set limits }
     _pointer_x := _pointer_x_min #> (_pointer_x + x) <# _pointer_x_max
@@ -95,7 +99,7 @@ PUB pointer_rel_y(): y
     y := 0
     y -= rd_byte(core.UP)
     y += rd_byte(core.DOWN)
-    y := ~y / _pointer_y_sens                  ' extend sign, scale to sensitivity
+    y := ~y / _pointer_y_sens                   ' extend sign, scale to sensitivity
 
     { update the pointer absolute position and clamp to set limits }
     _pointer_y := _pointer_y_min #> (_pointer_y + y) <# _pointer_y_max
@@ -124,6 +128,7 @@ PRI writereg(reg_nr, ptr_buff, len)
     i2c.write(reg_nr)
     i2c.wrblock_lsbf(ptr_buff, len)
     i2c.stop()
+
 
 DAT
 {

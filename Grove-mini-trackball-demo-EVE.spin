@@ -1,23 +1,23 @@
 {
-    --------------------------------------------
-    Filename: Grove-mini-trackball-demo-EVE.spin
-    Author: Jesse Burt
-    Description: Demo of the Grove I2C mini-trackball
+----------------------------------------------------------------------------------------------------
+    Filename:       Grove-mini-trackball-demo-EVE.spin
+    Description:    Demo of the Grove I2C mini-trackball
         * EVE display output
-    Copyright (c) 2024
-    Started Jan 1, 2024
-    Updated Jan 2, 2024
-    See end of file for terms of use.
-    --------------------------------------------
+    Author:         Jesse Burt
+    Started:        Jan 1, 2024
+    Updated:        Sep 3, 2024
+    Copyright (c) 2024 - See end of file for terms of use.
+----------------------------------------------------------------------------------------------------
 }
+
 ' Uncomment the below lines to use the bytecode-based I2C engine
 '#define GROVE_MINI_TRACKBALL_I2C_BC
 '#pragma exportdef(GROVE_MINI_TRACKBALL_I2C_BC)
 
 CON
 
-    _clkmode    = cfg#_clkmode
-    _xinfreq    = cfg#_xinfreq
+    _clkmode    = xtal1+pll16x
+    _xinfreq    = 5_000_000
 
 
 ' Uncomment one of the following, depending on your display size/resolution
@@ -28,11 +28,11 @@ CON
 '#include "eve3-lcdtimings.320x240.spinh"
 '#include "eve3-lcdtimings.320x102.spinh"
 
+
 OBJ
 
-    cfg:        "boardcfg.flip"
-    ser:        "com.serial.terminal.ansi" | SER_BAUD=115_200
     time:       "time"
+    ser:        "com.serial.terminal.ansi" | SER_BAUD=115_200
     lcd:        "display.lcd.bt81x" | CS=0, SCK=1, MOSI=2, MISO=3, RST=4
     pointer:    "input.pointer.grove-mini-trackball" | SCL=28, SDA=29, I2C_FREQ=100_000
 
@@ -64,6 +64,7 @@ PUB main() | i
             lcd.plot(pointer.abs_x(), pointer.abs_y())
         lcd.dl_end()
 
+
 PUB setup()
 
     ser.start()
@@ -74,7 +75,7 @@ PUB setup()
     if ( lcd.start(@_disp_setup) )
         ser.strln(@"EVE started")
     else
-        ser.strln(@"EVE failed to start")
+        ser.strln(@"EVE failed to start - halting")
         repeat
 
     if ( pointer.start() )
@@ -82,6 +83,7 @@ PUB setup()
     else
         ser.strln(@"Trackball driver failed to start - halting")
         repeat
+
 
 DAT
 {

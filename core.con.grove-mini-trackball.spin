@@ -1,13 +1,12 @@
 {
-    --------------------------------------------
-    Filename: core.con.grove-mini-trackball.spin
-    Author: Jesse Burt
-    Description: Grove mini trackball-specific constants
-    Copyright (c) 2024
-    Started Jan 1, 2024
-    Updated Jan 2, 2024
-    See end of file for terms of use.
-    --------------------------------------------
+----------------------------------------------------------------------------------------------------
+    Filename:       core.con.grove-mini-trackball.spin
+    Description:    Grove mini trackball-specific constants
+    Author:         Jesse Burt
+    Started:        Jan 1, 2024
+    Updated:        Sep 3, 2024
+    Copyright (c) 2024 - See end of file for terms of use.
+----------------------------------------------------------------------------------------------------
 }
 
 CON
@@ -49,6 +48,7 @@ CON
     LED_BREATHING_2     = $09
     LED_BREATHING_ALL   = $0a
     LED_MOVE_FLASH      = $0b
+
 
 PUB null()
 ' This is not a top-level object
